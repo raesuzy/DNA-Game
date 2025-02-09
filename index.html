@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Central Dogma Alchemist</title>
+    <style>
+        body {
+            font-family: Poppins, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #1e1e2e, #3a3a56);
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: #50fa7b;
+            font-size: 1.8em;
+        }
+        .game-container {
+            background: #282a36;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            display: inline-block;
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+        }
+        .sequence-box, input, .options {
+            font-size: 20px;
+            padding: 10px;
+            margin: 10px;
+            background: #44475a;
+            border-radius: 5px;
+            color: white;
+            border: none;
+            text-align: center;
+            display: block;
+            width: 80%;
+            margin: auto;
+        }
+        button {
+            color: white;
+            font-size: 18px;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        #remove-btn {
+            background: #d98020;
+        }
+        #clear-btn {
+            background: #ff5555;
+        }
+        #convert-btn {
+            background: #50fa7b;
+            color: black;
+        }
+        #convert-btn:hover {
+            background: #40d674;
+        }
+        .button-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .draggable-letters {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .letter {
+            background: #6272a4;
+            padding: 15px;
+            border-radius: 5px;
+            cursor: grab;
+            font-size: 24px;
+            font-weight: bold;
+            user-select: none;
+        }
+        .drop-zone {
+            margin-top: 20px;
+            background: #44475a;
+            padding: 20px;
+            border-radius: 5px;
+            min-height: 50px;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .conversion-options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 18px;
+        }
+        .result-container {
+            background: #1e1e2e;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .result-container p {
+            font-size: 18px;
+            color: #f8f8f2;
+        }
+        @media (max-width: 600px) {
+            .draggable-letters {
+                flex-wrap: wrap;
+            }
+            .conversion-options {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>✨🔬 The Central Dogma Alchemist: Converting DNA into Life's Code 🔄🧬</h1>
+    <div class="game-container">
+        <p>Drag and drop the letters to create a sequence:</p>
+        <div class="draggable-letters">
+            <div class="letter" draggable="true" ondragstart="drag(event)">A</div>
+            <div class="letter" draggable="true" ondragstart="drag(event)">T</div>
+            <div class="letter" draggable="true" ondragstart="drag(event)">G</div>
+            <div class="letter" draggable="true" ondragstart="drag(event)">C</div>
+        </div>
+        <div class="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)" id="sequence-box"></div>
+        <div class="button-row">
+            <button id="random-btn" onclick="generateRandomSequence()" style="background: #8be9fd; color: black;">Generate Sequence</button>
+            <button id="remove-btn" onclick="removeLastLetter()">Remove Last Letter</button>
+            <button id="clear-btn" onclick="clearSequence()">Clear Sequence</button>
+        </div>
+        <p>Choose Conversion Type:</p>
+        <div class="conversion-options">
+            <label><input type="checkbox" class="conversion-option" value="complementary"> Complementary </label>
+            <label><input type="checkbox" class="conversion-option" value="mrna"> mRNA</label>
+            <label><input type="checkbox" class="conversion-option" value="aminoacid"> Amino </label>
+        </div>
+        <button id="convert-btn" onclick="convertDNA()">Convert</button>
+        <div id="conversion-result" class="result-container"></div>
+    </div>
+    <script>
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.innerText);
+        }
+        function drop(ev) {
+            ev.preventDefault();
+            const sequenceBox = document.getElementById("sequence-box");
+            const data = ev.dataTransfer.getData("text");
+            sequenceBox.innerText += data;
+        }
+        function removeLastLetter() {
+            const sequenceBox = document.getElementById("sequence-box");
+            sequenceBox.innerText = sequenceBox.innerText.slice(0, -1);
+        }
+        function clearSequence() {
+            const sequenceBox = document.getElementById("sequence-box");
+            sequenceBox.innerText = "";
+        }
+        const complementMap = { 'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G' };
+        const mrnaMap = { 'A': 'U', 'T': 'A', 'G': 'C', 'C': 'G' };
+        const codonTable = {
+            'UUU': 'Phe', 'UUC': 'Phe',
+            'UUA': 'Leu', 'UUG': 'Leu', 'CUU': 'Leu', 'CUC': 'Leu', 'CUA': 'Leu', 'CUG': 'Leu',
+            'AUU': 'Ile', 'AUC': 'Ile', 'AUA': 'Ile', 'AUG': 'Met',
+            'GUU': 'Val', 'GUC': 'Val', 'GUA': 'Val', 'GUG': 'Val',
+            'UCU': 'Ser', 'UCC': 'Ser', 'UCA': 'Ser', 'UCG': 'Ser', 'AGU': 'Ser', 'AGC': 'Ser',
+            'CCU': 'Pro', 'CCC': 'Pro', 'CCA': 'Pro', 'CCG': 'Pro',
+            'ACU': 'Thr', 'ACC': 'Thr', 'ACA': 'Thr', 'ACG': 'Thr',
+            'GCU': 'Ala', 'GCC': 'Ala', 'GCA': 'Ala', 'GCG': 'Ala',
+            'UAU': 'Tyr', 'UAC': 'Tyr', 'UAA': 'Stop', 'UAG': 'Stop', 'UGA': 'Stop',
+            'CAU': 'His', 'CAC': 'His', 'CAA': 'Gln', 'CAG': 'Gln',
+            'AAU': 'Asn', 'AAC': 'Asn', 'AAA': 'Lys', 'AAG': 'Lys',
+            'GAU': 'Asp', 'GAC': 'Asp', 'GAA': 'Glu', 'GAG': 'Glu',
+            'UGU': 'Cys', 'UGC': 'Cys', 'UGG': 'Trp',
+            'CGU': 'Arg', 'CGC': 'Arg', 'CGA': 'Arg', 'CGG': 'Arg', 'AGA': 'Arg', 'AGG': 'Arg',
+            'GGU': 'Gly', 'GGC': 'Gly', 'GGA': 'Gly', 'GGG': 'Gly'
+        };
+
+
+        function convertDNA() {
+            const dna = document.getElementById("sequence-box").innerText.toUpperCase();
+            const checkedOptions = document.querySelectorAll(".conversion-option:checked");
+            let resultHTML = "";
+
+            checkedOptions.forEach(option => {
+                if (option.value === "complementary") {
+                    const complementaryDNA = dna.split('').map(base => complementMap[base] || '?').join('');
+                    resultHTML += `<p><strong>Complementary DNA:</strong> ${complementaryDNA}</p>`;
+                }
+                if (option.value === "mrna") {
+                    const mrna = dna.split('').map(base => mrnaMap[base] || '?').join('');
+                    resultHTML += `<p><strong>mRNA:</strong> ${mrna}</p>`;
+                }
+                if (option.value === "aminoacid") {
+                    const mrna = dna.split('').map(base => mrnaMap[base] || '?').join('');
+                    const aminoAcids = [];
+                    for (let i = 0; i < mrna.length; i += 3) {
+                        const codon = mrna.substr(i, 3);
+                        if (codon.length < 3) break; // Ignore incomplete codons
+                        const aminoAcid = codonTable[codon] || '?';
+                        if (aminoAcid === 'Stop') break; // Stop translation at stop codon
+                        aminoAcids.push(aminoAcid);
+                    }
+                    resultHTML += `<p><strong>Amino Acids:</strong> ${aminoAcids.join('-')}</p>`;
+                }
+            });
+
+            document.getElementById("conversion-result").innerHTML = resultHTML || "<p>Please select a conversion option.</p>";
+        }
+
+
+        function generateRandomSequence(length = 10) {
+            const bases = ['A', 'T', 'G', 'C'];
+            let sequence = '';
+            for (let i = 0; i < length; i++) {
+                sequence += bases[Math.floor(Math.random() * bases.length)];
+            }
+            document.getElementById("sequence-box").innerText = sequence;
+        }
+    </script>
+</body>
+</html>
