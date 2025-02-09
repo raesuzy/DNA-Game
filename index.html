@@ -26,6 +26,7 @@
             text-align: center;
             width: 90%;
             max-width: 600px;
+            margin: auto;
         }
         .sequence-box, input, .options {
             font-size: 20px;
@@ -68,14 +69,15 @@
         .button-row {
             display: flex;
             justify-content: center;
+            flex-wrap: wrap;
             gap: 10px;
-            margin: 20px 0;
         }
         .draggable-letters {
             display: flex;
             justify-content: center;
             gap: 10px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
         .letter {
             background: #6272a4;
@@ -85,6 +87,7 @@
             font-size: 24px;
             font-weight: bold;
             user-select: none;
+            touch-action: manipulation;
         }
         .drop-zone {
             margin-top: 20px;
@@ -96,6 +99,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-wrap: wrap;
         }
         .conversion-options {
             display: flex;
@@ -129,6 +133,13 @@
                 align-items: center;
             }
         }
+
+        @media (max-width: 600px) {
+            .letter {
+                padding: 10px;
+                font-size: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -136,16 +147,16 @@
     <div class="game-container">
         <p>Drag and drop the letters to create a sequence:</p>
         <div class="draggable-letters">
-            <div class="letter" draggable="true" ondragstart="drag(event)">A</div>
-            <div class="letter" draggable="true" ondragstart="drag(event)">T</div>
-            <div class="letter" draggable="true" ondragstart="drag(event)">G</div>
-            <div class="letter" draggable="true" ondragstart="drag(event)">C</div>
+            <div class="letter" draggable="true" onclick="addToSequence('A')" ondragstart="drag(event)">A</div>
+            <div class="letter" draggable="true" onclick="addToSequence('T')" ondragstart="drag(event)">T</div>
+            <div class="letter" draggable="true" onclick="addToSequence('G')" ondragstart="drag(event)">G</div>
+            <div class="letter" draggable="true" onclick="addToSequence('C')" ondragstart="drag(event)">C</div>
         </div>
         <div class="drop-zone" ondrop="drop(event)" ondragover="allowDrop(event)" id="sequence-box"></div>
         <div class="button-row">
             <button id="random-btn" onclick="generateRandomSequence()" style="background: #8be9fd; color: black;">Generate Sequence</button>
-            <button id="remove-btn" onclick="removeLastLetter()">Remove Last Letter</button>
-            <button id="clear-btn" onclick="clearSequence()">Clear Sequence</button>
+            <button id="remove-btn" onclick="removeLastLetter()">Remove Letter</button>
+            <button id="clear-btn" onclick="clearSequence()">Clear </button>
         </div>
         <p>Choose Conversion Type:</p>
         <div class="conversion-options">
@@ -165,9 +176,12 @@
         }
         function drop(ev) {
             ev.preventDefault();
-            const sequenceBox = document.getElementById("sequence-box");
+            //const sequenceBox = document.getElementById("sequence-box");
             const data = ev.dataTransfer.getData("text");
             sequenceBox.innerText += data;
+        }
+        function addToSequence(letter) {
+            document.getElementById("sequence-box").innerText += letter;
         }
         function removeLastLetter() {
             const sequenceBox = document.getElementById("sequence-box");
@@ -230,7 +244,7 @@
         }
 
 
-        function generateRandomSequence(length = 10) {
+        function generateRandomSequence(length = 20) {
             const bases = ['A', 'T', 'G', 'C'];
             let sequence = '';
             for (let i = 0; i < length; i++) {
